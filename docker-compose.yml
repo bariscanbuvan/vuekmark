@@ -1,0 +1,42 @@
+version: "3"
+services:
+    server:
+        container_name: bookmark-mevn-server
+        build:
+            context: ./server
+        depends_on:
+            - bookmark-db
+            - bookmark-elastic
+            - scraper-service
+        env_file:
+            - ./server/.env
+        ports:
+            - "8000:8000"
+    client:
+        container_name: bookmark-mevn-client
+        build:
+            context: ./client
+        ports:
+            - "8001:8001"
+        env_file:
+            - ./client/.env
+    scraper-service:
+        container_name: bookmark-mevn-scraper-service
+        build:
+            context: ./scraper
+        ports:
+            - "5000:5000"
+    bookmark-db:
+        container_name: bookmark-mevn-db
+        image: mongo:4.0
+        restart: always
+        ports:
+            - "27017:27017"
+    bookmark-elastic:
+        container_name: bookmark-mevn-elastic
+        image: elasticsearch:7.11.1
+        restart: always
+        environment:
+            discovery.type: single-node
+        ports:
+            - "9200:9200"
